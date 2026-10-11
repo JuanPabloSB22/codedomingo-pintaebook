@@ -1,0 +1,153 @@
+<main class="new-ebook" aria-labelledby="new-ebook-title">
+  @if (isLoading) {
+    <app-book-loader [message]="loadingMessage"></app-book-loader>
+  } @else if (!showEditor) {
+    <section class="ebook-setup" aria-labelledby="ebook-setup-title">
+      <div class="ebook-setup__intro">
+        <p class="eyebrow">Escritura / Nuevo proyecto</p>
+        <h1 id="ebook-setup-title">Preparate para crear tu E-book</h1>
+        <p class="new-ebook__intro">Contanos algunos detalles y después vas a poder desarrollar tu historia en el editor.</p>
+      </div>
+
+      <form class="ebook-setup__form" [formGroup]="setupForm" (ngSubmit)="startEbook()">
+        <div class="panel-heading">
+          <p class="eyebrow">Ficha inicial</p>
+          <span class="panel-heading__number">01</span>
+        </div>
+        <div class="ebook-setup__fields">
+          <label class="field">
+            <span>Título del E-book</span>
+            <input type="text" formControlName="title" placeholder="Ej: Los Espejos de Papel" />
+            @if (setupForm.controls.title.touched && setupForm.controls.title.invalid) {
+              <small class="field-error">Ingresá un título para continuar.</small>
+            }
+          </label>
+          <label class="field field--wide">
+            <span>Descripción breve</span>
+            <textarea rows="4" formControlName="description" placeholder="¿De qué trata tu E-book?"></textarea>
+            @if (setupForm.controls.description.touched && setupForm.controls.description.invalid) {
+              <small class="field-error">Agregá una breve descripción.</small>
+            }
+          </label>
+          <label class="field field--wide">
+            <span>Idea o temática principal</span>
+            <textarea rows="3" formControlName="promptIdea" placeholder="¿Qué querés desarrollar en tu E-book?"></textarea>
+            @if (setupForm.controls.promptIdea.touched && setupForm.controls.promptIdea.invalid) {
+              <small class="field-error">Contanos la idea principal de tu E-book.</small>
+            }
+          </label>
+          <label class="field">
+            <span>Cantidad de capítulos</span>
+            <input type="number" min="1" max="10" formControlName="quantityChapters" />
+            @if (setupForm.controls.quantityChapters.touched && setupForm.controls.quantityChapters.invalid) {
+              <small class="field-error">Elegí entre 1 y 10 capítulos.</small>
+            }
+          </label>
+          <label class="field">
+            <span>Género</span>
+            <select formControlName="genre">
+              <option>Ficción literaria</option>
+              <option>Novela</option>
+              <option>Ensayo</option>
+              <option>Poesía</option>
+              <option>Autoayuda</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Tipo de contenido</span>
+            <select formControlName="contentType">
+              <option>Novela</option>
+              <option>Cuento</option>
+              <option>Guía práctica</option>
+              <option>Poemario</option>
+            </select>
+          </label>
+        </div>
+        <div class="ebook-setup__actions">
+          <div>
+            <span class="ebook-setup__hint">La generación consume 100 créditos.</span>
+            @if (formError) {
+              <small class="form-error" role="alert">{{ formError }}</small>
+            }
+          </div>
+          <button type="submit" class="button button--primary" [disabled]="isLoading">
+            {{ isLoading ? 'Creando...' : 'Comenzar a escribir' }} <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </form>
+    </section>
+  } @else {
+  <header class="new-ebook__header">
+    <div>
+      <p class="eyebrow">Escritura / Nuevo proyecto</p>
+      <h1 id="new-ebook-title">Crear E-book</h1>
+      <p class="new-ebook__intro">Dale forma a tu próxima historia, bloque a bloque.</p>
+    </div>
+    <div class="new-ebook__actions">
+      @if (saveMessage) {
+        <span class="save-message" role="status">{{ saveMessage }}</span>
+      }
+      <button type="button" class="button button--quiet" (click)="saveDraft()">Guardar como borrador</button>
+      <button type="button" class="button button--primary" (click)="saveDraft()">Guardar sección <span aria-hidden="true">→</span></button>
+    </div>
+  </header>
+  @if (formError) {
+    <p class="form-error" role="alert">{{ formError }}</p>
+  }
+
+  <section class="editor-layout" aria-label="Editor de E-book">
+    @if (chapters.length) {
+      <div class="ebook-section-picker">
+        <label>
+          <span>Capítulo</span>
+          <select [ngModel]="selectedChapterId" [ngModelOptions]="{ standalone: true }" (ngModelChange)="onChapterChange($event)">
+            @for (chapter of chapters; track chapter.id) {
+              <option [value]="chapter.id">{{ chapter.title }}</option>
+            }
+          </select>
+        </label>
+        @if (sections.length) {
+          <label>
+            <span>Sección</span>
+            <select [ngModel]="selectedSectionId" [ngModelOptions]="{ standalone: true }" (ngModelChange)="onSectionChange($event)">
+              @for (section of sections; track section.id) {
+                <option [value]="section.id">{{ section.title }}</option>
+              }
+            </select>
+          </label>
+        }
+      </div>
+    }
+    <section class="writing-panel">
+      <div class="writing-panel__topline">
+        <div>
+          <p class="eyebrow">Manuscrito</p>
+          <span class="writing-panel__status"><i></i> Guardado localmente</span>
+        </div>
+        <span class="writing-panel__count">{{ wordCount }} palabras</span>
+      </div>
+      <div class="editor-frame">
+        <div class="editor-toolbar" aria-label="Herramientas de formato">
+          <button type="button" aria-label="Párrafo" title="Párrafo"><span class="toolbar-letter">T</span></button>
+          <button type="button" aria-label="Título 1" title="Título 1"><span>H<sub>1</sub></span></button>
+          <button type="button" aria-label="Título 2" title="Título 2"><span>H<sub>2</sub></span></button>
+          <button type="button" class="toolbar-button--quote" aria-label="Cita" title="Cita">“</button>
+          <span class="toolbar-divider" aria-hidden="true"></span>
+          <button type="button" aria-label="Código" title="Código"><span>&lt; &gt;</span></button>
+          <span class="toolbar-spacer"></span>
+          <span class="toolbar-font">Cormorant Garamond <b>16px</b></span>
+          <button type="button" class="toolbar-icon" aria-label="Más herramientas" title="Más herramientas">▣</button>
+        </div>
+        <div id="ebook-editor" class="editorjs-holder"></div>
+        <div class="editor-prompt">
+          <input type="text" [(ngModel)]="aiPrompt" [ngModelOptions]="{ standalone: true }" placeholder="Pregunta o pide cambios al asistente..." aria-label="Pregunta al asistente" (keydown.enter)="$event.preventDefault(); generateWithAi()" />
+          <button type="button" aria-label="Enviar pregunta al asistente" [disabled]="isAiLoading" (click)="generateWithAi()">{{ isAiLoading ? '…' : '↑' }}</button>
+        </div>
+        @if (aiError) {
+          <p class="form-error" role="alert">{{ aiError }}</p>
+        }
+      </div>
+    </section>
+  </section>
+  }
+</main>

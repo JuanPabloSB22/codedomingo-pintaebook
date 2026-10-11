@@ -1,0 +1,25 @@
+<header>
+  <nav class="navbar" aria-label="Navegación principal">
+    <div class="navbar__left">
+      <ul>
+        <li><a routerLink="/">Inicio</a></li>
+        <li><a routerLink="/about">Sobre Nosotros</a></li>
+        <li><a [routerLink]="['/credits']" [fragment]="'planes'">Créditos</a></li>
+      </ul>
+    </div>
+
+    <div class="navbar__brand">
+      <a routerLink="/" aria-label="PintaEbook">
+        <img ngSrc="/img/logos/logo1_acortado.png" width="180" height="64" alt="PintaEbook" priority>
+      </a>
+    </div>
+
+    <div class="navbar__right">
+      <ul>
+        <li><a routerLink="/login">Iniciar Sesión</a></li>
+        <li><a routerLink="/register">Registro</a></li>
+      </ul>
+      <app-theme-toggle></app-theme-toggle>
+    </div>
+  </nav>
+</header>

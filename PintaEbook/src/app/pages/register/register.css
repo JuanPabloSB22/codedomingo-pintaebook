@@ -1,0 +1,123 @@
+.auth-theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 40;
+}
+
+:host-context(.dark) .login-layout {
+  background: #211b17;
+  color: #f2efe3;
+}
+
+:host-context(.dark) .bookmark-card {
+  background: #3b2823;
+  border-color: rgba(229, 171, 53, .45);
+}
+
+:host-context(.dark) .bookmark-card a,
+:host-context(.dark) form h1,
+:host-context(.dark) form > p,
+:host-context(.dark) form label {
+  color: #f2efe3 !important;
+}
+
+:host-context(.dark) .login-layout input {
+  border-color: #725846 !important;
+  background: #2e211d !important;
+  color: #f2efe3 !important;
+}
+
+:host-context(.dark) .login-layout input::placeholder {
+  color: #a99586;
+}
+
+.login-layout {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(213, 166, 88, 0.2), transparent 36%),
+    radial-gradient(circle at 100% 100%, rgba(149, 50, 47, 0.07), transparent 30%),
+    #f9f5ed;
+}
+
+.bookmark-card {
+  position: absolute;
+  top: 0;
+  left: 3rem;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 11rem;
+  padding: 1.2rem 1rem 1.5rem;
+  background: linear-gradient(180deg, #f9f0dc, #fffaf0);
+  border: 1px solid rgba(122, 82, 46, 0.4);
+  box-shadow: 0 14px 25px -14px rgba(42, 12, 14, 0.8);
+}
+
+.bookmark-logo {
+  display: block;
+  width: 6.95rem;
+  height: 6.25rem;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+:host-context(.dark) .bookmark-logo {
+  transform: scale(2.05);
+  transform-origin: center;
+}
+
+.bookmark-card::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  bottom: -1.05rem;
+  width: 0;
+  height: 0;
+  border-right: 5.6rem solid transparent;
+  border-left: 5.6rem solid transparent;
+  border-top: 1.05rem solid #f8f0dc;
+  filter: drop-shadow(0 2px 1px rgba(67, 36, 20, 0.2));
+}
+
+.bookmark-card a {
+  color: #3d1718;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+	font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.bookmark-card a:hover {
+  color: #8b5d24;
+}
+
+.login-ribbon {
+  position: relative;
+  width: 2.05rem;
+  height: 100%;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #eecf7a 0%, #c79034 100%);
+  box-shadow:
+    inset 1px 0 0 rgba(255, 248, 225, 0.45),
+    inset -1px 0 0 rgba(112, 72, 14, 0.2);
+}
+
+.login-ribbon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1.02rem;
+  width: 0;
+  height: 0;
+  border-right: 1.025rem solid transparent;
+  border-left: 1.025rem solid transparent;
+  border-top: 1.02rem solid #ca983f;
+}
+
+@media (max-width: 1023px) {
+  .login-layout {
+    background:
+      radial-gradient(circle at 60% 0%, rgba(213, 166, 88, 0.22), transparent 45%),
+      #f9f5ed;
+  }
+}

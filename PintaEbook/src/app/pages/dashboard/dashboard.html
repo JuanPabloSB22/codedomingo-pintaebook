@@ -1,0 +1,90 @@
+<div class="dashboard-shell">
+  <div class="dashboard-page">
+    <app-private-navbar
+      [isAdmin]="isAdmin"
+      [sectionName]="activeSection"
+      (navigationEvent)="handleNavigation($event)"
+      (logoutEvent)="logout()"
+      (brandClickEvent)="setActiveSection('dashboard')">
+    </app-private-navbar>
+
+    @if (isOpeningEbook) {
+      <app-book-loader message="Estamos abriendo tu E-book..."></app-book-loader>
+    } @else if (activeSection === 'ebooks') {
+      <app-my-ebooks (openEbook)="openEbook($event)" (createEbook)="setActiveSection('new-ebook')"></app-my-ebooks>
+    } @else if (activeSection === 'profile') {
+      <app-profile></app-profile>
+    } @else if (activeSection === 'new-ebook') {
+      <app-new-ebook (ebookCreated)="onEbookCreated()" (creditsUpdated)="onCreditsUpdated($event)"></app-new-ebook>
+    } @else if (activeSection === 'editor') {
+      <app-new-ebook [existingEbook]="selectedEbook" (ebookCreated)="onEbookCreated()" (creditsUpdated)="onCreditsUpdated($event)"></app-new-ebook>
+    } @else {
+    <main class="dashboard-content">
+      <section class="welcome" aria-labelledby="welcome-title">
+        <div>
+          <h1 id="welcome-title">Bienvenido editor.</h1>
+          <p>Volvé a tu proyecto y seguí escribiendo.</p>
+        </div>
+        <button type="button" class="primary-action" (click)="setActiveSection('new-ebook')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Crear nuevo ebook
+        </button>
+      </section>
+
+      <section class="stats" aria-label="Resumen de escritura">
+        <article class="stat-card">
+          <span class="stat-card__icon stat-card__icon--rose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v16H6.5A2.5 2.5 0 0 0 4 21.5zM4 5.5v16"/><path d="M8 7h7M8 11h7"/></svg></span>
+          <span><small>Mis proyectos</small><strong>{{ dashboardEbooks.length }}</strong><em>En tu biblioteca</em></span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__icon stat-card__icon--gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20V4h16v16z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>
+          <span><small>Créditos disponibles</small><strong>{{ creditBalance?.credits_available ?? '—' }}</strong><em>Saldo de tu cuenta</em></span>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="continue-card" aria-labelledby="continue-title">
+          <div class="continue-card__heading">
+            <div><p class="eyebrow">En progreso</p><h2 id="continue-title">Continuá escribiendo</h2></div>
+            <button type="button" class="text-button" (click)="setActiveSection('ebooks')">Ver todos <span aria-hidden="true">→</span></button>
+          </div>
+          @if (latestEbook) {
+            <div class="current-book">
+              <div class="book-cover" aria-hidden="true"><span>{{ latestEbook.title }}</span><i>PintaEbook</i></div>
+              <div class="current-book__content">
+                <p class="current-book__chapter">{{ latestEbook.status === 'COMPLETED' ? 'Finalizado' : latestEbook.status === 'FAILED' ? 'Error de generación' : 'En progreso' }}</p>
+                <h3>{{ latestEbook.title }}</h3>
+                <p>{{ latestUpdatedLabel }}</p>
+                <div class="progress-label"><span>Progreso del manuscrito</span><strong>{{ latestEbook.status === 'PROCESSING' ? 'Generando' : latestEbook.status === 'FAILED' ? 'Sin datos' : '100%' }}</strong></div>
+                <div class="progress" role="progressbar" [attr.aria-label]="'Progreso de ' + latestEbook.title" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="latestProgress"><span [style.width.%]="latestProgress"></span></div>
+                <button type="button" class="continue-button" [disabled]="latestEbook.status === 'FAILED'" (click)="openEbook(latestEbook)">Continuar en el editor <span aria-hidden="true">→</span></button>
+              </div>
+            </div>
+          } @else {
+            <p>Todavía no hay ebooks. Crea tu primer proyecto para empezar.</p>
+            <button type="button" class="continue-button" (click)="setActiveSection('new-ebook')">Crear un ebook <span aria-hidden="true">→</span></button>
+          }
+        </article>
+
+        <aside class="goal-card" aria-labelledby="goal-title">
+          <div class="goal-card__ornament" aria-hidden="true">✦</div>
+          <p class="eyebrow">Meta semanal</p>
+          <h2 id="goal-title">Tu ritual de escritura</h2>
+          <p>Estás muy cerca. Una sesión más y alcanzás tu objetivo.</p>
+          <div class="goal-card__amount"><strong>1.240</strong><span>/ 2.000 palabras</span></div>
+          <div class="progress progress--gold" role="progressbar" aria-label="Meta semanal" aria-valuemin="0" aria-valuemax="2000" aria-valuenow="1240"><span></span></div>
+          <div class="goal-card__days"><span class="day day--done">L</span><span class="day day--done">M</span><span class="day day--done">X</span><span class="day day--today">J</span><span class="day">V</span><span class="day">S</span><span class="day">D</span></div>
+        </aside>
+      </section>
+    </main>
+    }
+  </div>
+
+</div>
+
+<!-- Modal Créditos/Planes -->
+<app-credits-modal 
+  [isOpen]="isCreditsModalOpen" 
+  [mode]="creditsModalMode"
+  (closeEvent)="closeCreditsModal()">
+</app-credits-modal>
